@@ -55,7 +55,7 @@ int main(int argc, char **argv) {
     }
 
     // establish new socket
-    int socketfd = socket(AF_INET, SOCKET_DGRAM, 0);
+    int socketfd = socket(AF_INET, SOCK_DGRAM, 0);
     int recvMsgSize = 0;
     // sockaddr_in is a netinet lib struct
     /**
@@ -108,8 +108,7 @@ int main(int argc, char **argv) {
 
         /* Block until receive message from a client. Networking tutorial P.58*/
         if (recvMsgSize =
-                    recvfrom(socketfd, Wrq_buffer, MAX_WRQ, 0, (struct sockaddr *) &client_addr_len, &client_addr_len) <
-                    0)
+                    recvfrom(socketfd, Wrq_buffer, MAX_WRQ, 0, (struct sockaddr *) &client_addr_len, &client_addr_len) <0)
         {
             perror("TTFTP_ERROR: ");
             fflush(stdout);
@@ -119,7 +118,7 @@ int main(int argc, char **argv) {
         WRQ_parser(Wrq_buffer, &Wrq);
 
         // validate wrq
-        if (Wrq.opcode != 2 || strcmp(wrq.trans_mode, "octet"))
+        if (Wrq.opcode != 2 || strcmp(Wrq.trans_mode, "octet"))
         {  //  invalid wrq
             continue;   // todo: check if there are defined error messages or actions for this case
         }
@@ -139,7 +138,7 @@ int main(int argc, char **argv) {
         }
 
         //  respond WRQ with ACK
-        ACK_response(socketfd, % client_addr, client_addr_len);
+        ACK_response(socketfd, &client_addr, client_addr_len);
         recieveData(socketfd, &client_addr, client_addr_len, fptr);
 
         if (fclose(fptr) != 0)
@@ -153,7 +152,7 @@ int main(int argc, char **argv) {
 }
 
 
-}
+
 
 /** upon recieiving WRQ this func gets the data from the buffer and parsing it to our struct
  * @param buffer - raw data
@@ -183,7 +182,7 @@ void recieveData(int socketfd, struct sockaddr_in *client_addr, socklen_t client
     int num_of_ready = 0;
     int num_of_timeoutExpired = 0;
     int ack_num = 0;
-    int recvMsgSize = 0
+    int recvMsgSize = 0;
     data_struct data;
 
     FD_ZERO(&fd_recieve); //  Initializes the file descriptor set fdset to have zero bits for all file descriptors.
@@ -211,7 +210,7 @@ void recieveData(int socketfd, struct sockaddr_in *client_addr, socklen_t client
                 /**********************************************************/
                 /* Call select() and wait 3 minutes for it to complete.   */
                 /**********************************************************/
-                num_of_ready = select(socketfd + 1, &fdrecv, NULL, NULL, &timeout);
+                num_of_ready = select(socketfd + 1, &fd_recieve, NULL, NULL, &timeout);
 
                 /**********************************************************/
                 /* Check to see if the 3 minute time out expired.         */
@@ -232,8 +231,7 @@ void recieveData(int socketfd, struct sockaddr_in *client_addr, socklen_t client
                 if (num_of_ready > 0)
                 {
                     //  process the data packet from the socket
-                    recvMsgSize = recvfrom(socketfd, DATA_PACKET_SIZE, 0, (struct sockaddr *) &client_addr_len,
-                                           &client_addr_len);
+                    recvMsgSize = recvfrom(socketfd, DATA_PACKET_SIZE, 0, (struct sockaddr *) &client_addr_length,&client_addr_len);
                     if (recvMsgSize < 0)
                     {
                         // generic system-call failure message
@@ -275,7 +273,7 @@ void recieveData(int socketfd, struct sockaddr_in *client_addr, socklen_t client
                 fflush(stdout);
                 return;
             }
-        } while (false) // TODO: wtf is this condition?!?!
+        } while (false); // TODO: wtf is this condition?!?!
 
         //  this is where we know that our packet is valid and matches expectations
         printf("IN:DATA, %d, %d\n", data.block_num, bytes_recv);
@@ -285,7 +283,6 @@ void recieveData(int socketfd, struct sockaddr_in *client_addr, socklen_t client
         //  print all but header
         printf("WRITING: %d\n", recvMsgSize - 4);
         fflush(stdout);
-        res = fwrite(data.data, 1, recvMsgSize - 4, fptr);
 
         if (fwrite(data.data, 1, recvMsgSize - 4, fptr) != recvMsgSize - 4)
         {    // case it failed to write the data to the file
@@ -303,8 +300,7 @@ void recieveData(int socketfd, struct sockaddr_in *client_addr, socklen_t client
             ack_num++;
             ACK_response(socketfd, ack_num, client_addr, client_addr_length);
 
-        }
-        while (recvMsgSize >= DATA_PACKET_SIZE);  // means we still have left blocks from the client to read
+        }while (recvMsgSize >= DATA_PACKET_SIZE);  // means we still have left blocks from the client to read
 
         //  all data was transmitted
         printf("RECVOK\n");
