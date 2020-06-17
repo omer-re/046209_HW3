@@ -96,10 +96,10 @@ int main(int argc, char **argv) {
         fflush(stdout);
         exit(1);
     }
-/** wait for requests,
- * validate requests,
- * respond accordingly (ACK) and process
- */
+    /** wait for requests,
+     * validate requests,
+     * respond accordingly (ACK) and process
+     */
     while (1)
     {
         //  clear buffers to ensure valid data
