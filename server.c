@@ -41,7 +41,7 @@ void recieveData(int socketfd, struct sockaddr_in *client_addr, socklen_t client
 
 void WRQ_parser(char *buffer, wrq_struct *wrq);
 
-void ACK_response(int socketfd, int ack_num, struct sockaddr_in *client_addr, socklen_t client_addr_length);
+void ACK_response(int socketfd, int ack_num, struct sockaddr_in *client, socklen_t client_addr_length);
 
 
 int main(int argc, char **argv) {
@@ -49,7 +49,7 @@ int main(int argc, char **argv) {
     // verify arg num
     if (argc < 2)
     {
-        printf("ERROR: Expecting more arguments\n");  //Lior said we can phrase whatever message we want
+        printf("ERROR: too few arguments\n");  //Lior said we can phrase whatever message we want
         fflush(stdout);
         exit(1);
     }
@@ -124,7 +124,7 @@ int main(int argc, char **argv) {
         }
 
         // the packet is a valid WRQ
-        printf("IN:WRQ, %s, %s\nWhere %s and %s are values of appropriate fields in the packet.\n", wrq.filename,
+        printf("IN:WRQ, %s, %s\nWhere %s and %s are values of appropriate fields in the packet.\n", Wrq.filename,
                wrq.trans_mode, wrq.filename, wrq.trans_mode);
         fflush(stdout);
 
@@ -138,7 +138,7 @@ int main(int argc, char **argv) {
         }
 
         //  respond WRQ with ACK
-        ACK_response(socketfd, &client_addr, client_addr_len);
+        ACK_response(socketfd,0,  &client_addr, client_addr_len);
         recieveData(socketfd, &client_addr, client_addr_len, fptr);
 
         if (fclose(fptr) != 0)
@@ -231,7 +231,7 @@ void recieveData(int socketfd, struct sockaddr_in *client_addr, socklen_t client
                 if (num_of_ready > 0)
                 {
                     //  process the data packet from the socket
-                    recvMsgSize = recvfrom(socketfd, DATA_PACKET_SIZE, 0, (struct sockaddr *) &client_addr_length,&client_addr_len);
+                    recvMsgSize = recvfrom(socketfd, DATA_PACKET_SIZE, 0, (struct sockaddr *) client_addr,&client_addr_length);
                     if (recvMsgSize < 0)
                     {
                         // generic system-call failure message
@@ -241,7 +241,7 @@ void recieveData(int socketfd, struct sockaddr_in *client_addr, socklen_t client
                     }
                     else
                     { //  convert to endian
-                        data.opcode = nthos(data.opcode);
+                        data.opcode = ntohs(data.opcode);
                         data.block_num = ntohs(data.block_num);
                         break; // packet been received, go process it.
                     }
@@ -327,6 +327,4 @@ void ACK_response(int socketfd, int ack_num, struct sockaddr_in *client, socklen
     // success!! you are a lucky person
     printf("OUT:ACK, %d\n", ack_num);
     fflush(stdout);
-
-
 }
