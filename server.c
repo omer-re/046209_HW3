@@ -314,7 +314,7 @@ void recieveData(int socketfd, struct sockaddr_in *client_addr, socklen_t client
  * @param ack_num - packet num we acknowledge
  * @param socketfd, client, client_addr_length - are network parameters
  */
-void ACK_response(int socketfd, int ack_num, struct sockaddr_in *client, socklen_t client_addr_length) {
+void ACK_response(int socketfd, int ack_num, struct sockaddr_in *client_addr, socklen_t client_addr_length) {
     ack_struct ack = {htons(4), htons(ack_num)}; // create an ack for sending
     int bytes_sent = 0;
     do
