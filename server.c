@@ -19,12 +19,12 @@
 #define DATA_PACKET_SIZE 516
 
 // STRUCT DECLARATIONS
-typedef struct wrq_struct {
+typedef struct Wrq_struct {
     uint16_t opcode;
     char filename[MAX_STRING + 1];
     char trans_mode[MAX_STRING + 1];
 
-} __attribute__((packed)) wrq_struct;
+} __attribute__((packed)) Wrq_struct;
 
 typedef struct ack_struct {
     uint16_t opcode, block_num;
@@ -39,7 +39,7 @@ typedef struct data_struct {
 //  function headers
 void recieveData(int socketfd, struct sockaddr_in *client_addr, socklen_t client_addr_length, FILE *fptr);
 
-void WRQ_parser(char *buffer, wrq_struct *wrq);
+void WRQ_parser(char *buffer, Wrq_struct *Wrq);
 
 void ACK_response(int socketfd, int ack_num, struct sockaddr_in *client, socklen_t client_addr_length);
 
@@ -71,7 +71,7 @@ int main(int argc, char **argv) {
     };
      */
     struct sockaddr_in my_addr, client_addr = {0};
-    wrq_struct Wrq = {0};
+    Wrq_struct Wrq = {0};
     socklen_t client_addr_len = sizeof(client_addr);
     char Wrq_buffer[MAX_WRQ];
 
@@ -104,7 +104,7 @@ int main(int argc, char **argv) {
     {
         //  clear buffers to ensure valid data
         memset(&Wrq_buffer, 0, MAX_WRQ);
-        memset(&Wrq, 0, sizeof(wrq_struct));
+        memset(&Wrq, 0, sizeof(Wrq_struct));
 
         /* Block until receive message from a client. Networking tutorial P.58*/
         if (recvMsgSize =
@@ -117,18 +117,18 @@ int main(int argc, char **argv) {
         //  struct the WRQ
         WRQ_parser(Wrq_buffer, &Wrq);
 
-        // validate wrq
+        // validate Wrq
         if (Wrq.opcode != 2 || strcmp(Wrq.trans_mode, "octet"))
-        {  //  invalid wrq
+        {  //  invalid Wrq
             continue;   // todo: check if there are defined error messages or actions for this case
         }
 
         // the packet is a valid WRQ
         printf("IN:WRQ, %s, %s\nWhere %s and %s are values of appropriate fields in the packet.\n", Wrq.filename,
-               wrq.trans_mode, wrq.filename, wrq.trans_mode);
+               Wrq.trans_mode, Wrq.filename, Wrq.trans_mode);
         fflush(stdout);
 
-        FILE *fptr = fopen(wrq.filename, "w");
+        FILE *fptr = fopen(Wrq.filename, "w");
         if (fptr == NULL)
         {
             //  generic system-call failure message
@@ -156,16 +156,16 @@ int main(int argc, char **argv) {
 
 /** upon recieiving WRQ this func gets the data from the buffer and parsing it to our struct
  * @param buffer - raw data
- * @param wrq - structered data
+ * @param Wrq - structered data
  */
-void WRQ_parser(char *buffer, wrq_struct *wrq) {
-    memcpy(&wrq->opcode, buffer, 2);
-    wrq->opcode = ntohs(wrq->opcode);    // fix network byte order
+void WRQ_parser(char *buffer, Wrq_struct *Wrq) {
+    memcpy(&Wrq->opcode, buffer, 2);
+    Wrq->opcode = ntohs(Wrq->opcode);    // fix network byte order
     int filename_len = strlen(buffer + 2);
-    strncpy(wrq->filename, buffer + 2, filename_len);    // copy filename
-    if (strrchr(wrq->filename, '/'))    // remove full path if exists
-        strcpy(wrq->filename, strrchr(wrq->filename, '/') + 1);
-    strncpy(wrq->trans_mode, buffer + 2 + filename_len + 1,
+    strncpy(Wrq->filename, buffer + 2, filename_len);    // copy filename
+    if (strrchr(Wrq->filename, '/'))    // remove full path if exists
+        strcpy(Wrq->filename, strrchr(Wrq->filename, '/') + 1);
+    strncpy(Wrq->trans_mode, buffer + 2 + filename_len + 1,
             strlen(buffer + 2 + filename_len + 1));    // copy transmission mode
 
 }
@@ -192,7 +192,7 @@ void recieveData(int socketfd, struct sockaddr_in *client_addr, socklen_t client
     //  given skeleton
 
 
-    do
+
     {
         memset(&data, 0, sizeof(data));  //  recieve new input data packets
         do
@@ -231,7 +231,7 @@ void recieveData(int socketfd, struct sockaddr_in *client_addr, socklen_t client
                 if (num_of_ready > 0)
                 {
                     //  process the data packet from the socket
-                    recvMsgSize = recvfrom(socketfd, DATA_PACKET_SIZE, 0, (struct sockaddr *) client_addr,&client_addr_length);
+                    recvMsgSize = recvfrom(socketfd, DATA_PACKET_SIZE,MAX_WRQ,  0, (struct sockaddr *) &client_addr,&client_addr_length);
                     if (recvMsgSize < 0)
                     {
                         // generic system-call failure message
@@ -276,7 +276,7 @@ void recieveData(int socketfd, struct sockaddr_in *client_addr, socklen_t client
         } while (false); // TODO: wtf is this condition?!?!
 
         //  this is where we know that our packet is valid and matches expectations
-        printf("IN:DATA, %d, %d\n", data.block_num, bytes_recv);
+        printf("IN:DATA, %d, %d\n", data.block_num, recvMsgSize);
         fflush(stdout);
         num_of_timeoutExpired = 0;
 
