@@ -193,6 +193,7 @@ void recieveData(int socketfd, struct sockaddr_in *client_addr, socklen_t client
 
 
 
+	do
     {
         memset(&data, 0, sizeof(data));  //  recieve new input data packets
         do
@@ -274,6 +275,12 @@ void recieveData(int socketfd, struct sockaddr_in *client_addr, socklen_t client
                 return;
             }
         } while (false); // TODO: wtf is this condition?!?!
+        /***********************************************************************/
+        /* A do/while(FALSE) loop is used to make error cleanup easier.  The   */
+        /* close() of each of the socket descriptors is only done once at the  */
+        /* very end of the program.                                            */
+        /***********************************************************************/
+
 
         //  this is where we know that our packet is valid and matches expectations
         printf("IN:DATA, %d, %d\n", data.block_num, recvMsgSize);
