@@ -72,7 +72,7 @@ int main(int argc, char **argv) {
      */
     struct sockaddr_in my_addr, client_addr = {0};
     Wrq_struct Wrq = {0};
-    socklen_t client_addr_len = sizeof(client_addr);
+    socklen_t client_addr_length = sizeof(client_addr);
     char Wrq_buffer[MAX_WRQ];
 
     // initialize my_addr
@@ -111,7 +111,7 @@ int main(int argc, char **argv) {
         /* Block until receive message from a client. Networking tutorial P.58*/
         /**if (recvMsgSize =
                     recvfrom(socketfd, Wrq_buffer, MAX_WRQ, 0, (struct sockaddr *) &client_addr_len, &client_addr_len) <0)**/
-        recvMsgSize = recvfrom(socketfd, Wrq_buffer, MAX_WRQ, 0, (struct sockaddr *) &client_addr_len, &client_addr_len);
+        recvMsgSize = recvfrom(socketfd, Wrq_buffer, MAX_WRQ, 0, (struct sockaddr *) &client_addr, &client_addr_length);
         if (recvMsgSize<0)
         {
             perror("TTFTP_ERROR: ");
@@ -144,8 +144,8 @@ int main(int argc, char **argv) {
         }
 
         //  respond WRQ with ACK
-        ACK_response(socketfd,0,  &client_addr, client_addr_len);
-        recieveData(socketfd, &client_addr, client_addr_len, fptr);
+        ACK_response(socketfd,0,  &client_addr, client_addr_length);
+        recieveData(socketfd, &client_addr, client_addr_length, fptr);
 
         if (fclose(fptr) != 0)
         {
@@ -336,8 +336,7 @@ void ACK_response(int socketfd, int ack_num, struct sockaddr_in* client_addr, so
     int bytes_sent = 0;
     do
     { // keep trying to send the ack, until it succeeds
-        bytes_sent = sendto(socketfd, &ack, sizeof(ack), 0,
-                            (struct sockaddr *) client_addr, client_addr_length);
+        bytes_sent = sendto(socketfd, &ack, sizeof(ack), 0,(struct sockaddr *) client_addr, client_addr_length);
         if (bytes_sent < 0)
         { // sending of ack has falied
             perror("TTFTP_ERROR: ");
