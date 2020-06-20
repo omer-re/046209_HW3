@@ -323,13 +323,13 @@ void recieveData(int socketfd, struct sockaddr_in *client_addr, socklen_t client
  * @param ack_num - packet num we acknowledge
  * @param socketfd, client, client_addr_length - are network parameters
  */
-void ACK_response(int socketfd, int ack_num, struct sockaddr_in *client_addr, socklen_t client_addr_length) {
+void ACK_response(int socketfd, int ack_num, struct sockaddr_in* client_addr, socklen_t client_addr_length) {
     ack_struct ack = {htons(4), htons(ack_num)}; // create an ack for sending
     int bytes_sent = 0;
     do
     { // keep trying to send the ack, until it succeeds
         bytes_sent = sendto(socketfd, &ack, sizeof(ack), 0,
-                            (struct sockaddr_in *) client_addr, client_addr_length);
+                            (struct sockaddr *) client_addr, client_addr_length);
         if (bytes_sent < 0) // sending of ack has falied
             perror("TTFTP_ERROR: ");
     } while (bytes_sent != sizeof(ack));
