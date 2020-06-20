@@ -104,7 +104,7 @@ int main(int argc, char **argv) {
     {
         //  clear buffers to ensure valid data
         memset(&Wrq_buffer, 0, MAX_WRQ);
-        memset(&Wrq, 0, sizeof(Wrq_struct));
+        memset(&Wrq, 0, sizeof(Wrq_struct));gcc -std=c99 -Wall -Werror -pedantic-errors -DNDEBUG *.c -o ttftps
 
         /* Block until receive message from a client. Networking tutorial P.58*/
         /**if (recvMsgSize =
@@ -234,7 +234,7 @@ void recieveData(int socketfd, struct sockaddr_in *client_addr, socklen_t client
                 if (num_of_ready > 0)
                 {
                     //  process the data packet from the socket
-                    recvMsgSize = recvfrom(socketfd, DATA_PACKET_SIZE,MAX_WRQ,  0, (struct sockaddr *) &client_addr,&client_addr_length);
+                    recvMsgSize = recvfrom(socketfd, &data, DATA_PACKET_SIZE, 0, (struct sockaddr *) client_addr,&client_addr_length);
                     if (recvMsgSize < 0)
                     {
                         // generic system-call failure message
