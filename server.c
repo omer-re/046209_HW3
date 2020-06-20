@@ -84,6 +84,7 @@ int main(int argc, char **argv) {
     if (socketfd == -1)  // case failure
     {
         perror("TTFTP_ERROR: ");
+        perror("87\n");  //TODO remove
         fflush(stdout);
         exit(1);
     }
@@ -93,6 +94,7 @@ int main(int argc, char **argv) {
     {
         close(socketfd);
         perror("TTFTP_ERROR: ");  // as defined for system call failure
+        perror("97\n");  //TODO remove
         fflush(stdout);
         exit(1);
     }
@@ -113,6 +115,7 @@ int main(int argc, char **argv) {
         if (recvMsgSize<0)
         {
             perror("TTFTP_ERROR: ");
+            perror("118\n");  //TODO remove
             fflush(stdout);
             continue;
         }
@@ -135,6 +138,7 @@ int main(int argc, char **argv) {
         {
             //  generic system-call failure message
             perror("TTFTP_ERROR: ");
+            perror("141\n");  //TODO remove
             fflush(stdout);
             continue;
         }
@@ -147,6 +151,7 @@ int main(int argc, char **argv) {
         {
             //  generic system-call failure message
             perror("TTFTP_ERROR: ");
+            perror("154\n");  //TODO remove
             fflush(stdout);
         }
     }
@@ -239,6 +244,7 @@ void recieveData(int socketfd, struct sockaddr_in *client_addr, socklen_t client
                     {
                         // generic system-call failure message
                         perror("TTFTP_ERROR: ");
+                        perror("242\n");  //TODO remove
                         fflush(stdout);
                         continue;
                     }
@@ -297,6 +303,8 @@ void recieveData(int socketfd, struct sockaddr_in *client_addr, socklen_t client
         {    // case it failed to write the data to the file
             // FATAL ERROR BAIL OUT
             perror("TTFTP_ERROR: ");
+            perror("301\n");  //TODO remove
+
             printf("RECVFAIL\n");
             fflush(stdout);
             return;
@@ -330,8 +338,11 @@ void ACK_response(int socketfd, int ack_num, struct sockaddr_in* client_addr, so
     { // keep trying to send the ack, until it succeeds
         bytes_sent = sendto(socketfd, &ack, sizeof(ack), 0,
                             (struct sockaddr *) client_addr, client_addr_length);
-        if (bytes_sent < 0) // sending of ack has falied
+        if (bytes_sent < 0)
+        { // sending of ack has falied
             perror("TTFTP_ERROR: ");
+            perror("339\n");  //TODO remove
+        }
     } while (bytes_sent != sizeof(ack));
     // success!! you are a lucky person
     printf("OUT:ACK, %d\n", ack_num);
