@@ -109,8 +109,7 @@ int main(int argc, char **argv) {
         memset(&Wrq, 0, sizeof(Wrq_struct));
 
         /* Block until receive message from a client. Networking tutorial P.58*/
-        /**if (recvMsgSize =
-                    recvfrom(socketfd, Wrq_buffer, MAX_WRQ, 0, (struct sockaddr *) &client_addr_len, &client_addr_len) <0)**/
+
         recvMsgSize = recvfrom(socketfd, Wrq_buffer, MAX_WRQ, 0, (struct sockaddr *) &client_addr, &client_addr_length);
         if (recvMsgSize<0)
         {
