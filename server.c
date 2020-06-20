@@ -302,20 +302,20 @@ void recieveData(int socketfd, struct sockaddr_in *client_addr, socklen_t client
             return;
         }
 
-        else
-        {
-            // case writing is successful
-            // respond the client with an ACK
-            ack_num++;
-            ACK_response(socketfd, ack_num, client_addr, client_addr_length);
 
-        }while (recvMsgSize >= DATA_PACKET_SIZE);  // means we still have left blocks from the client to read
+        // case writing is successful
+        // respond the client with an ACK
+        ack_num++;
+        ACK_response(socketfd, ack_num, client_addr, client_addr_length);
 
-        //  all data was transmitted
-        printf("RECVOK\n");
-        fflush(stdout);
-    }
+
+    }while (recvMsgSize >= DATA_PACKET_SIZE);  // means we still have left blocks from the client to read
+
+    //  all data was transmitted
+    printf("RECVOK\n");
+    fflush(stdout);
 }
+
 
 /**responding by sending ACK
  * sending an ACK with the proper ack_num to the client-side.
