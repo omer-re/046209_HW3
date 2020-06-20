@@ -104,7 +104,7 @@ int main(int argc, char **argv) {
     {
         //  clear buffers to ensure valid data
         memset(&Wrq_buffer, 0, MAX_WRQ);
-        memset(&Wrq, 0, sizeof(Wrq_struct));gcc -std=c99 -Wall -Werror -pedantic-errors -DNDEBUG *.c -o ttftps
+        memset(&Wrq, 0, sizeof(Wrq_struct));
 
         /* Block until receive message from a client. Networking tutorial P.58*/
         /**if (recvMsgSize =
