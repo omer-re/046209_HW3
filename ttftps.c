@@ -48,7 +48,6 @@ int main(int argc, char** argv) {
 	if (socketfd == -1)  // case failure
 	{
 		perror("TTFTP_ERROR: ");
-		perror("87\n");  //TODO remove
 		fflush(stdout);
 		exit(1);
 	}
@@ -58,7 +57,6 @@ int main(int argc, char** argv) {
 	{
 		close(socketfd);
 		perror("TTFTP_ERROR: ");  // as defined for system call failure
-		perror("97\n");  //TODO remove
 		fflush(stdout);
 		exit(1);
 	}
@@ -77,7 +75,6 @@ int main(int argc, char** argv) {
 		if (recvMsgSize < 0)
 		{
 			perror("TTFTP_ERROR: ");
-			perror("118\n");  //TODO remove
 			fflush(stdout);
 			continue;
 		}
@@ -91,8 +88,7 @@ int main(int argc, char** argv) {
 		}
 
 		// the packet is a valid WRQ
-		printf("IN:WRQ, %s, %s\nWhere %s and %s are values of appropriate fields in the packet.\n", Wrq.filename,
-			Wrq.trans_mode, Wrq.filename, Wrq.trans_mode);
+		printf("IN:WRQ, %s, %s\n", Wrq.filename, Wrq.trans_mode);
 		fflush(stdout);
 
 		FILE* fptr = fopen(Wrq.filename, "w");
@@ -100,7 +96,6 @@ int main(int argc, char** argv) {
 		{
 			//  generic system-call failure message
 			perror("TTFTP_ERROR: ");
-			perror("141\n");  //TODO remove
 			fflush(stdout);
 			continue;
 		}
@@ -113,7 +108,6 @@ int main(int argc, char** argv) {
 		{
 			//  generic system-call failure message
 			perror("TTFTP_ERROR: ");
-			perror("154\n");  //TODO remove
 			fflush(stdout);
 		}
 	}
